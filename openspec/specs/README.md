@@ -14,5 +14,7 @@ specs/
 - 一个 capability 对应一个业务能力（如 `tasks`、`auth`），不按代码目录划分
 - 新增 capability 时，先在 `harness/context/glossary.md` 登记术语
 
-当前状态：尚未建立任何规约域（骨架阶段）。
-第一个变更完成后，此目录会出现首个 `<capability>/spec.md`。
+当前规约域：
+
+- `health-check/` —— 健康探针接口与前端连通状态展示（首个垂直切片，由变更
+  `archive/2026-10-29-adopt-polyglot-stack` 归档生成）
