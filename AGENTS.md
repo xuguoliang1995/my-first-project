@@ -5,9 +5,16 @@
 
 ## 1. 项目是什么
 
-全栈 Web 应用。当前处于**骨架阶段**：固化的只有流程与约束，技术栈刻意未定。
-任何 app 的选型都必须走一次 openspec 变更，结论写入 `harness/context/architecture.md`
-与 `docs/decisions/`。
+**AIWorkSpace**：多仓库工作区。父仓库承载规约与执行框架
+（`openspec/` + `harness/` + `skills/`），两个可部署应用作为 **git submodule** 引入：
+
+| 模块 | 路径 | 仓库 | 是什么 |
+| --- | --- | --- | --- |
+| api | `apps/api` | `my-first-project-api`（`.gitmodules` url：`../my-first-project-api`） | Spring Boot 3.x / JDK 21 / Maven 后端，含 Testcontainers 集成测试与 compose.yaml |
+| web | `apps/web` | `my-first-project-web`（`.gitmodules` url：`../my-first-project-web`） | React + Vite SPA 前端，含 vitest 测试与 OpenAPI 生成的类型 |
+
+父仓库只记录每个 submodule 的**commit 指针**，不直接存代码。规约仍只有一个：
+所有变更（含跨 api/web 的）都在父仓库的 `openspec/` 里提案与归档。
 
 ## 2. 优先级（唯一裁决表）
 
@@ -112,6 +119,19 @@ npx openspec validate --strict --no-interactive --all   # 结构校验（必须�
 npx openspec archive <id> -y           # 归档并合并 delta 进主 spec
 ```
 
+Submodule（apps/api、apps/web）：
+
+```bash
+git clone --recurse-submodules <父仓库URL>       # 首次克隆必须带这个 flag（或克隆后 git submodule update --init）
+git -C apps/api commit -m "..." && git add apps/api  # 先在子仓库提交，再在父仓库更新指针
+git submodule update --init --recursive          # 把 submodule 同步到父仓库记录的 commit
+git submodule set-url ../my-first-project-api apps/api  # 改 submodule 源地址（本地路径 ↔ 远端）
+```
+
+**提交顺序铁律**：改了 submodule 内容，先在 submodule 里 commit（并推送其仓库），
+再在父仓库 `git add apps/api|apps/web` 提交新指针。父仓库指针指向的 commit
+若在子仓库里不可达，别人 clone 后 submodule 会直接坏掉。
+
 包管理：**npm workspaces**（`npm install`），单一 `package-lock.json`。
 `verify.sh` 本身不依赖任何包管理器 —— 它直接读各包 `package.json` 的 scripts 执行。
 
@@ -139,7 +159,9 @@ my-first-project/
 │   ├── skills/openspec-*      #   生成，勿手改（npx openspec update 刷新）
 │   └── commands/opsx/         #   生成，勿手改
 ├── docs/{decisions,retro}/    # ADR 与复盘（计划一律写进 openspec 变更的 tasks.md）
-├── apps/{web,api}/            # 可部署单元（待选型）
+├── apps/                      # ★ git submodules（各自独立仓库，见「1. 项目是什么」）
+│   ├── api/                   #   submodule → my-first-project-api（Spring Boot 后端）
+│   └── web/                   #   submodule → my-first-project-web（React + Vite 前端）
 ├── packages/shared/           # 跨端类型与纯函数
 └── scripts/                   # verify / new-change / install-hooks
 ```
