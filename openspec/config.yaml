@@ -1,0 +1,6 @@
+# OpenSpec 配置（官方 CLI 读取此文件定位规约根与工作流 schema）
+#
+# 不要手写 openspec/schemas/ 覆盖内置 schema：项目级 schema 的优先级最高，
+# 字段不全时会遮蔽官方 spec-driven，导致 `openspec instructions` 退化。
+# 需要定制时用官方命令：npx openspec schema fork spec-driven <name>
+schema: spec-driven

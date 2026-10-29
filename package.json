@@ -1,0 +1,29 @@
+{
+  "name": "my-first-project",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "npm@10.9.8",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "verify": "bash scripts/verify.sh",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "new:change": "bash scripts/new-change.sh",
+    "hooks:install": "bash scripts/install-hooks.sh",
+    "session:start": "bash harness/hooks/session-start.sh",
+    "openspec": "openspec"
+  },
+  "devDependencies": {
+    "@fission-ai/openspec": "^1.15.0",
+    "typescript": "^5.7.0"
+  }
+}

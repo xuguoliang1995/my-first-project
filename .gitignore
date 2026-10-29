@@ -1,0 +1,34 @@
+# 依赖
+node_modules/
+.pnpm-store/
+
+# 构建产物
+dist/
+build/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+.turbo/
+
+# 环境与密钥 —— 任何凭据都不得入库
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# 日志与系统
+*.log
+logs/
+.DS_Store
+Thumbs.db
+
+# 编辑器
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# OpenSpec 本地状态（config.yaml 与 specs/changes 必须入库，见 harness/rules/30）
+.openspec-cache/
