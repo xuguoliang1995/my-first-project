@@ -36,11 +36,18 @@ npx openspec instructions proposal --change <id>  # 取官方写作指引
 ### 2. 校验结构
 
 ```bash
-npx openspec validate --strict
+npx openspec validate --strict --no-interactive --all
 ```
 
+**必须带 `--no-interactive`**：否则在无 TTY 环境（CI / 智能体 shell）会等待交互输入而挂起。
+该参数只属于 `validate` 子命令，加在 `list` / `status` 上会报 `unknown option`。
+
 失败时按提示补齐：每个 delta 必须落在 `## ADDED/MODIFIED/REMOVED/RENAMED Requirements` 下，
-每个 `### Requirement:` 至少有一个 `#### Scenario:`。
+每个 `### Requirement:` 至少有一个 `#### Scenario:`，且描述中必须出现 RFC 2119 关键词
+（`MUST` / `SHALL` / `MUST NOT`），否则 strict 模式报警告。
+
+纯文档 / 工具链类变更不需要 delta（否则报 `must have at least one delta`）——
+在该变更的 `.openspec.yaml` 里设置 `skip_specs: true`。
 
 ### 3. 归档
 
@@ -50,6 +57,9 @@ npx openspec archive <change-id> -y
 
 归档会把 delta 合并进 `openspec/specs/<capability>/spec.md`，并把变更目录移入
 `changes/archive/YYYY-MM-DD-<id>/`。**不要手工搬目录**，否则 specs 不会更新。
+
+新建的主 spec 会带一行占位：`Purpose: TBD - created by archiving change <id>`，
+归档后**必须**把 `## Purpose` 改写成真实描述，否则真相来源的第一段就是无效信息。
 
 ## delta 书写格式
 
