@@ -10,8 +10,13 @@
 
 | 模块 | 路径 | 仓库 | 是什么 |
 | --- | --- | --- | --- |
-| api | `apps/api` | `my-first-project-api`（`.gitmodules` url：`../my-first-project-api`） | Spring Boot 3.x / JDK 21 / Maven 后端，含 Testcontainers 集成测试与 compose.yaml |
-| web | `apps/web` | `my-first-project-web`（`.gitmodules` url：`../my-first-project-web`） | React + Vite SPA 前端，含 vitest 测试与 OpenAPI 生成的类型 |
+| api | `apps/api` | `my-first-project-api`（`.gitmodules` url：绝对本地路径，待网络稳定切至 `github.com/xuguoliang1995/api`） | Spring Boot 3.x / JDK 21 / Maven 后端，含 Testcontainers 集成测试与 compose.yaml |
+| web | `apps/web` | `my-first-project-web`（`.gitmodules` url：绝对本地路径，待切至 `github.com/xuguoliang1995/web`） | React + Vite SPA 前端，含 vitest 测试与 OpenAPI 生成的类型 |
+
+> **两阶段收敛**（决策见 `docs/decisions/0003-adopt-aiworkspace-submodules.md`）：
+> 当前 `.gitmodules` 用**绝对本地路径**（本机可跑可验证，但**不可跨机器 clone**）；
+> github 链路稳定后需：先 push 两个子仓库 → 把 url 改为绝对 github URL → `git submodule sync` → push 父仓库。
+> **不用相对 URL**——父仓库 origin 在 github 时，`../xxx` 会被错误解析成不存在的仓库名。
 
 父仓库只记录每个 submodule 的**commit 指针**，不直接存代码。规约仍只有一个：
 所有变更（含跨 api/web 的）都在父仓库的 `openspec/` 里提案与归档。
@@ -125,7 +130,7 @@ Submodule（apps/api、apps/web）：
 git clone --recurse-submodules <父仓库URL>       # 首次克隆必须带这个 flag（或克隆后 git submodule update --init）
 git -C apps/api commit -m "..." && git add apps/api  # 先在子仓库提交，再在父仓库更新指针
 git submodule update --init --recursive          # 把 submodule 同步到父仓库记录的 commit
-git submodule set-url ../my-first-project-api apps/api  # 改 submodule 源地址（本地路径 ↔ 远端）
+git submodule set-url /Users/xuguoliang/Desktop/my-first-project-api apps/api  # 改 submodule 源地址（当前为绝对本地路径；github 可达后改为绝对 github URL，勿用相对 URL）
 ```
 
 **提交顺序铁律**：改了 submodule 内容，先在 submodule 里 commit（并推送其仓库），

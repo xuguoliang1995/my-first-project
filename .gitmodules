@@ -1,6 +1,6 @@
 [submodule "apps/api"]
 	path = apps/api
-	url = ../my-first-project-api
+	url = /Users/xuguoliang/Desktop/my-first-project-api
 [submodule "apps/web"]
 	path = apps/web
-	url = ../my-first-project-web
+	url = /Users/xuguoliang/Desktop/my-first-project-web
