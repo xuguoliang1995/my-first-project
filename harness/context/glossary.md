@@ -44,6 +44,9 @@
 | --- | --- |
 | 健康探针（health check） | 系统对外暴露的、匿名可访问的存活查询接口 |
 | Testcontainers | 测试期用 Docker 起一次性数据库容器，跑完即弃 |
+| 单例容器（singleton container） | 用 static 块启动、整个测试 JVM 共用一个容器；与 `@Container` 的"按测试类起容器"相对 |
+| 本地开发编排（compose） | `apps/api/compose.yaml` 定义的本地 PostgreSQL；由 `spring-boot-docker-compose` 在应用启动时自动拉起 |
+| 镜像加速器（registry mirror） | `~/.docker/daemon.json` 里的 `registry-mirrors`；本机无法直连 Docker Hub，缺它则拉不到任何镜像 |
 | 无法验证（unverified） | 因缺少工具链/产物而未执行的检查；`verify.sh` 以 exit 2 表达，绝不能当作通过 |
 | Maven wrapper（mvnw） | 随仓库携带的 Maven 启动器，不需要全局安装 `mvn`，但必须有 JDK |
 

@@ -7,10 +7,10 @@
 
 | 项 | 值 |
 | --- | --- |
-| 阶段 | polyglot 骨架已落地，首个垂直切片 `health-check` 打通（后端探针 + 前端连通展示） |
+| 阶段 | polyglot 骨架已落地，首个垂直切片 `health-check` 打通（后端探针 + 前端连通展示）；数据访问基座（JPA + Testcontainers）已验证 |
 | 前端技术栈 | React + Vite，纯 SPA（CSR），`apps/web` |
 | 后端技术栈 | Spring Boot 3.5.x + Spring Data JPA，Maven wrapper，JDK 21，`apps/api` |
-| 数据库 | PostgreSQL（开发与测试；测试用 Testcontainers 起一次性容器） |
+| 数据库 | PostgreSQL 16：本地开发由 `apps/api/compose.yaml` 提供（应用启动时自动拉起），测试用 Testcontainers 起一次性容器并**在测试 JVM 内共用** |
 | 跨栈契约 | `contracts/openapi.json`，后端 springdoc 代码优先生成，前端派生类型 |
 | 部署形态 | 待定（不在当前变更范围） |
 | 包管理 | npm workspaces（`apps/*`、`packages/*`，单 `package-lock.json`）+ Maven（`apps/api`） |
@@ -74,6 +74,9 @@ git pre-commit → 把 verify.sh 变成不可绕过的闸门
 - 前端：Node ≥ 22，npm workspaces 管理多包
 - 后端：JDK 21 + Maven wrapper（`apps/api/mvnw`）；不需要全局 `mvn`，但必须有 JDK
 - 数据库测试：Testcontainers 需要可用的 Docker；Docker 缺失时 `apps/api` 的库相关测试无法验证
+- Docker Desktop 的 daemon 由 GUI 托管，**机器重启后要手动打开一次**；未启动时库相关测试会真实失败
+- 新增 `@SpringBootTest` 必须继承 `AbstractIntegrationTest`（共用单例容器），否则每个测试类各起一个
+  数据库容器，且容易因连不上本机 5432 而红
 - 跨栈一致性：改后端接口 → 重新生成 `contracts/openapi.json` → 前端 `codegen`，三步缺一即 `verify.sh` 红
 - 业务代码从可在一次会话内完成的最小切片起步（垂直切片优先于水平铺开）
 - `verify.sh` 不依赖具体包管理器（直接读各包 `package.json` 的 scripts）
@@ -85,3 +88,7 @@ git pre-commit → 把 verify.sh 变成不可绕过的闸门
   探测 JDK 必须**真实执行** `java -version`，不能只判断命令存在。
 - 本机 `localhost` 优先解析到 `::1`；Vite 代理与后端 IPv4 监听错位会表现为"连接超时"（不是连接拒绝）。
   dev 代理目标写 `127.0.0.1` 而非 `localhost`。
+- 本机 Docker Hub 直连超时（60s 后 `context deadline exceeded`）。必须在 `~/.docker/daemon.json` 配
+  `registry-mirrors` 才能拉镜像，否则 Testcontainers 与 compose 都起不来。
+- Docker Desktop 未安装 privileged helper 时 **`/var/run/docker.sock` 不存在**，socket 实际在
+  `~/.docker/run/docker.sock`。Testcontainers 会自动发现它，但只认 `/var/run/docker.sock` 的工具需要另行处理。

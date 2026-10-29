@@ -13,12 +13,12 @@
 - [x] 2.1 先写失败测试：MockMvc 断言 `GET /api/health` 返回 200 且响应体 `status` 字段为 `ok`，验证：实现前 `cd apps/api && ./mvnw -q test` 该测试为 RED
 - [x] 2.2 实现 health 控制器与响应模型让 2.1 转 GREEN，验证：`./mvnw -q test` 通过
 - [x] 2.3 断言该端点匿名可访问（无鉴权），验证：新增一个不带任何凭据的访问测试为 GREEN（对应 spec「无需鉴权即可访问」）
-- [ ] 2.4 生成 `contracts/openapi.json` 并提交，验证：启动应用后 springdoc 输出含 `/api/health` 路径，且该文件落在 `contracts/` 并被 git 跟踪
+- [x] 2.4 生成 `contracts/openapi.json` 并提交，验证：启动应用后 springdoc 输出含 `/api/health` 路径，且该文件落在 `contracts/` 并被 git 跟踪
 
 ## 3. 数据访问基座（PostgreSQL + JPA + Testcontainers）
 
-- [ ] 3.1 先写失败测试：Testcontainers 起一次性 PostgreSQL 容器、加载含 DataSource 的 Spring 上下文并执行 `SELECT 1`，验证：无配置时 `./mvnw -q test` 该测试为 RED
-- [ ] 3.2 配置 PostgreSQL 方言 + Spring Data JPA + Testcontainers 让 3.1 转 GREEN，验证：`./mvnw -q test` 通过（本切片不引入任何业务实体/领域模型）
+- [x] 3.1 先写失败测试：Testcontainers 起一次性 PostgreSQL 容器、加载含 DataSource 的 Spring 上下文并执行 `SELECT 1`，验证：无配置时 `./mvnw -q test` 该测试为 RED
+- [x] 3.2 配置 PostgreSQL 方言 + Spring Data JPA + Testcontainers 让 3.1 转 GREEN，验证：`./mvnw -q test` 通过（本切片不引入任何业务实体/领域模型）
 
 ## 4. 前端工程骨架（脚手架）
 
@@ -39,7 +39,7 @@
 
 - [x] 7.1 给 `scripts/verify.sh` 增加 Maven 分支：检测到 `apps/api/pom.xml` 则跑 `./mvnw -q test`；JDK/Maven 缺失时该阶段记为"跳过=无法验证"而非静默通过，验证：本机有 JDK 时该阶段执行；把 `mvn` 移出 PATH 后脚本整体退出码不为 0（体现"无法验证"）
 - [x] 7.2 给 `verify.sh` 增加契约一致性步骤（后端产 `openapi.json` → 前端 codegen → `tsc`），验证：人为使 `contracts/openapi.json` 与前端生成类型不一致时，该步骤变红
-- [ ] 7.3 后端配置 CORS 允许 dev 前端来源，验证：跨源预检请求返回正确 `Access-Control-Allow-Origin`（测试或 curl 观测）
+- [x] 7.3 后端配置 CORS 允许 dev 前端来源，验证：跨源预检请求返回正确 `Access-Control-Allow-Origin`（测试或 curl 观测）
 
 ## 8. 骨架文档与决策记录
 
