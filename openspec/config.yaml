@@ -20,7 +20,7 @@ context: |
   `npx openspec validate` 必须带 `--no-interactive`，否则在无 TTY 环境下挂起。
 
   执行层约束（harness/）：先读 harness/rules/00-constitution.md；
-  完成的定义见 harness/gates/definition-of-done.md；术语对照见 harness/context/glossary.md。
+  完成的定义见 harness/workflow/definition-of-done.md；术语对照见 harness/context/glossary.md。
 
   变更规模判据：
   - 拼写、注释、格式：直接改，不开变更
@@ -55,6 +55,6 @@ operations:
       - 每完成一个任务跑一次 bash scripts/verify.sh；退出码 2 表示无法验证，不等于通过
   archive:
     guidance:
-      - 归档前对照 harness/gates/definition-of-done.md 逐项自查，verification.md 必须存在且为真实输出
+      - 归档前对照 harness/workflow/definition-of-done.md 逐项自查，verification.md 必须存在且为真实输出
       - 新建的主 spec 会带占位 Purpose（TBD），归档后必须改写为真实描述
       - 若架构有变，同步更新 harness/context/architecture.md

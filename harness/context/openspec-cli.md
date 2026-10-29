@@ -116,5 +116,5 @@ npx openspec archive <id> -y
 | --- | --- |
 | 变更创建后 | 读 `harness/rules/00-constitution.md` 与命中的 `skills/*/SKILL.md` |
 | 实现完成 | 跑 `bash scripts/verify.sh`，结果写入 `verification.md` |
-| 归档前 | 对照 `harness/gates/definition-of-done.md` 逐项自查 |
+| 归档前 | 对照 `harness/workflow/definition-of-done.md` 逐项自查 |
 | 归档后 | 改写主 spec 的 Purpose；架构有变则更新 `harness/context/architecture.md` |

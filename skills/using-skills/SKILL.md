@@ -37,7 +37,7 @@ description: 元技能。任务开始前用来决定"该用哪个技能"，并�
 
 ## 没有匹配技能时
 
-不要即兴发明流程。回退到 `harness/loop/protocol.md` 的 O→P→A→V→R，
+不要即兴发明流程。回退到 `harness/workflow/protocol.md` 的 O→P→A→V→R，
 并在任务结束后判断：这次的套路值得沉淀吗？值得 → 用 `writing-skills` 新增一个。
 
 ## 退出标准

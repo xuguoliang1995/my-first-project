@@ -32,7 +32,7 @@ esac
 echo
 
 echo "[2/3] Definition of Done 自查"
-echo "  逐项核对 harness/gates/definition-of-done.md，未满足项必须如实列出。"
+echo "  逐项核对 harness/workflow/definition-of-done.md，未满足项必须如实列出。"
 echo "  验证输出请写入 openspec/changes/<id>/verification.md"
 echo
 

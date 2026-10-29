@@ -33,7 +33,7 @@
 4. `openspec/changes/<id>/proposal.md` — 本次要做什么（有变更时）
 5. `skills/<命中>/SKILL.md` — 当前任务套路（索引见第 5 节）
 6. 动手改代码前：目标域 `openspec/specs/<domain>/spec.md`
-7. 交付前：`harness/gates/definition-of-done.md` + `harness/loop/protocol.md`
+7. 交付前：`harness/workflow/definition-of-done.md` + `harness/workflow/protocol.md`
 
 ## 4. 三层架构
 
@@ -124,8 +124,7 @@ my-first-project/
 ├── harness/                   # ★ 执行层
 │   ├── rules/                 # 宪法 / 代码 / 测试 / 安全与提交
 │   ├── context/               # 架构全景 / 术语表 / OpenSpec CLI 说明
-│   ├── gates/                 # 完成的定义（DoD）
-│   ├── loop/                  # O→P→A→V→R 协议
+│   ├── workflow/              # O→P→A→V→R 协议 + 完成的定义（DoD）
 │   └── hooks/                 # session-start / task-complete / pre-commit / guard-bash
 ├── openspec/                  # ★ 意图层（官方 CLI 兼容）
 │   ├── config.yaml            # schema + context / rules / operations（项目约定唯一存放处）
