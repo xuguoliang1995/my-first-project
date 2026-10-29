@@ -1,0 +1,58 @@
+{
+  "components": {
+    "schemas": {
+      "HealthResponse": {
+        "description": "健康探针响应",
+        "properties": {
+          "status": {
+            "description": "服务状态，存活时为 ok",
+            "example": "ok",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "OpenAPI definition",
+    "version": "v0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/health": {
+      "get": {
+        "description": "返回服务存活状态；无需鉴权",
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "查询健康状态",
+        "tags": [
+          "health"
+        ]
+      }
+    }
+  },
+  "servers": [
+    {
+      "description": "Generated server url",
+      "url": "http://localhost:8080"
+    }
+  ],
+  "tags": [
+    {
+      "description": "服务健康探针",
+      "name": "health"
+    }
+  ]
+}
