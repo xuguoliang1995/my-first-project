@@ -29,7 +29,7 @@
 
 1. `harness/rules/00-constitution.md` — 永远先读
 2. `harness/context/architecture.md` — 系统当前长什么样
-3. `openspec/project.md` — 项目级约定与技术边界（**常被跳过，但含变更规模判据**）
+3. `openspec/config.yaml` — 项目级约定、技术边界、**变更规模判据**（同时被注入到 `/opsx:*` 指引中）
 4. `openspec/changes/<id>/proposal.md` — 本次要做什么（有变更时）
 5. `skills/<命中>/SKILL.md` — 当前任务套路（索引见第 5 节）
 6. 动手改代码前：目标域 `openspec/specs/<domain>/spec.md`
@@ -63,19 +63,32 @@
 | 新增或修改技能本身 | `skills/writing-skills/SKILL.md` |
 | 不确定该用哪个 | `skills/using-skills/SKILL.md`（元技能） |
 
+OpenSpec 官方技能（`/opsx:*`，由 `npx openspec init` 生成在 `.claude/`、`.qoder/`）负责
+**规约产物的创建与归档**；上表的手写技能负责**怎么把事做对**。两者叠加使用，不互相替代。
+命令说明见 `harness/context/openspec-cli.md`。
+
+| 任务信号 | OPSX 命令 |
+| --- | --- |
+| 想法未成形，要先想清楚 | `/opsx:explore` |
+| 需求已清，要建变更并生成全部规划产物 | `/opsx:propose` |
+| 规划产物齐了，开始实现 | `/opsx:apply` |
+| 中途需求变化，要修订规划（不改代码） | `/opsx:update` |
+| 实现完成、验证通过，要归档 | `/opsx:archive` |
+
 ## 6. 标准工作流（七步 = O→P→A→V→R）
 
-| # | 步骤 | 循环阶段 | 产物 | 技能 |
-| --- | --- | --- | --- | --- |
-| 1 | 澄清 | O | 共识 | brainstorming |
-| 2 | 立规约 | P | `changes/<id>/proposal.md` + delta spec | — |
-| 3 | 定方案 | P | `design.md` / ADR | writing-plans |
-| 4 | 拆任务 | P | `tasks.md`（每条含验证方式） | writing-plans |
-| 5 | 测试先行 | A | 红灯 → 绿灯 | test-driven-development |
-| 6 | 验证 | V | `changes/<id>/verification.md` 真实输出 | verification-before-completion |
-| 7 | 归档 | R | `openspec archive` 合并 delta | — |
+| # | 步骤 | 循环阶段 | 产物 | 手写技能 | OPSX |
+| --- | --- | --- | --- | --- | --- |
+| 1 | 澄清 | O | 共识 | brainstorming | `/opsx:explore` |
+| 2 | 立规约 | P | `changes/<id>/proposal.md` + delta spec | — | `/opsx:propose` |
+| 3 | 定方案 | P | `design.md` / ADR | writing-plans | （同上） |
+| 4 | 拆任务 | P | `tasks.md`（每条含验证方式） | writing-plans | （同上） |
+| 5 | 测试先行 | A | 红灯 → 绿灯 | test-driven-development | `/opsx:apply` |
+| 6 | 验证 | V | `changes/<id>/verification.md` 真实输出 | verification-before-completion | — |
+| 7 | 归档 | R | 合并 delta 进主 spec | — | `/opsx:archive` |
 
 Lite 路径可跳过第 3 步，**不允许跳过第 2 步和第 6 步**。
+第 6 步没有 OPSX 对应：`/opsx:apply` 完成**不等于**验证通过，必须跑 `bash scripts/verify.sh`。
 
 ## 7. 硬性规则（违反即返工）
 
@@ -110,19 +123,20 @@ my-first-project/
 ├── CLAUDE.md                  # 转发到 AGENTS.md
 ├── harness/                   # ★ 执行层
 │   ├── rules/                 # 宪法 / 代码 / 测试 / 安全与提交
-│   ├── context/               # 架构全景 / 术语表
+│   ├── context/               # 架构全景 / 术语表 / OpenSpec CLI 说明
 │   ├── gates/                 # 完成的定义（DoD）
 │   ├── loop/                  # O→P→A→V→R 协议
 │   └── hooks/                 # session-start / task-complete / pre-commit
 ├── openspec/                  # ★ 意图层（官方 CLI 兼容）
-│   ├── config.yaml            # schema: spec-driven
-│   ├── project.md             # 项目级约定与变更规模判据
-│   ├── AGENTS.md              # OpenSpec 官方工作流说明
+│   ├── config.yaml            # schema + context / rules / operations（项目约定唯一存放处）
 │   ├── specs/<domain>/        # 当前行为的唯一真相来源
 │   └── changes/<id>/          # 进行中的变更 + archive/
-├── skills/                    # ★ 方法层（Agent Skills 格式）
-├── commands/                  # 斜杠命令入口
+├── skills/                    # ★ 方法层：手写技能真身（Agent Skills 格式）
+├── commands/                  # 手写斜杠命令真身
 ├── agents/                    # 子智能体定义
+├── .claude/ .qoder/           # IDE 集成：手写技能/命令的逐项链接 + openspec 生成文件
+│   ├── skills/openspec-*      #   生成，勿手改（npx openspec update 刷新）
+│   └── commands/opsx/         #   生成，勿手改
 ├── docs/{plans,decisions,retro}/
 ├── apps/{web,api}/            # 可部署单元（待选型）
 ├── packages/shared/           # 跨端类型与纯函数

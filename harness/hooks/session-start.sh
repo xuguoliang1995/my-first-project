@@ -13,7 +13,7 @@ echo
 echo "-- 必读顺序 --"
 echo "1. harness/rules/00-constitution.md"
 echo "2. harness/context/architecture.md"
-echo "3. openspec/project.md"
+echo "3. openspec/config.yaml（项目约定与变更规模判据）"
 echo "4. openspec/changes/<id>/proposal.md（进行中的变更）"
 echo "5. skills/<命中>/SKILL.md"
 echo
@@ -23,6 +23,12 @@ if [ -d skills ]; then
   find skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort | sed 's|^|  |'
 else
   echo "  (skills/ 不存在)"
+fi
+opsx="$(find .claude/commands/opsx -maxdepth 1 -name '*.md' 2>/dev/null | sort | sed 's|.*/||; s|\.md$||' | tr '\n' ' ')"
+if [ -n "$opsx" ]; then
+  echo "  OpenSpec 命令: $(printf '/opsx:%s ' $opsx)（说明见 harness/context/openspec-cli.md）"
+else
+  echo "  OpenSpec 命令: 未安装（执行 npx openspec init --tools claude,qoder）"
 fi
 echo
 

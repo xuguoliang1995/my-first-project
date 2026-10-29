@@ -1,0 +1,1 @@
+../../commands/brainstorm.md

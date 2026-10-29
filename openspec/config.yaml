@@ -1,6 +1,60 @@
-# OpenSpec 配置（官方 CLI 读取此文件定位规约根与工作流 schema）
+# OpenSpec 项目配置 —— 官方 CLI 读取此文件定位规约根与工作流 schema。
+# context / rules / operations 会被注入到 /opsx:* 与 `openspec instructions` 的输出中，
+# 是「跨变更稳定的项目约定」的唯一存放处（取代旧版 openspec/project.md）。
 #
 # 不要手写 openspec/schemas/ 覆盖内置 schema：项目级 schema 的优先级最高，
-# 字段不全时会遮蔽官方 spec-driven，导致 `openspec instructions` 退化。
-# 需要定制时用官方命令：npx openspec schema fork spec-driven <name>
+# 字段不全时会遮蔽官方 spec-driven。需要定制时用：npx openspec schema fork spec-driven <name>
 schema: spec-driven
+
+context: |
+  项目：my-first-project，全栈 Web 应用，当前为骨架阶段，业务功能尚未开始。
+  所有产物用中文书写；RFC 2119 关键词（MUST / SHALL / SHOULD / MAY）保留英文大写。
+
+  技术边界：
+  - Node >= 22；npm workspaces（apps/*、packages/*），单一 package-lock.json
+  - TypeScript strict（tsconfig.base.json）
+  - 前端框架、后端框架、数据库：待定 —— 选型本身必须走一次变更并产出 ADR（docs/decisions/）
+  - 跨端类型与纯函数放 packages/shared（零 I/O、零框架依赖，只允许被 apps/* 依赖）
+
+  CLI 调用：openspec 安装在项目本地，命令一律写成 `npx openspec ...`；
+  `npx openspec validate` 必须带 `--no-interactive`，否则在无 TTY 环境下挂起。
+
+  执行层约束（harness/）：先读 harness/rules/00-constitution.md；
+  完成的定义见 harness/gates/definition-of-done.md；术语对照见 harness/context/glossary.md。
+
+  变更规模判据：
+  - 拼写、注释、格式：直接改，不开变更
+  - 单一能力内的行为调整：Lite —— proposal + delta spec + tasks（design 可极简）
+  - 引入新依赖、改技术栈、改数据模型、跨包契约（packages/shared）、认证鉴权：全量 —— 完整 design.md + ADR
+
+  非目标：本仓库暂不承载部署脚本、CI、容器化；不一次性设计完整架构，按垂直切片演进。
+
+rules:
+  proposal:
+    - 写清意图、范围与「非目标」；非目标至少一条
+    - 说明属于 Lite 还是全量变更，并引用 context 中的变更规模判据
+  specs:
+    - 只写外部可观察行为，不写类名、函数名、库名、目录结构
+    - 每条 Requirement 必须含 MUST 或 SHALL，且至少一个可测试的 Scenario（WHEN / THEN）
+    - delta 只写变化部分（ADDED / MODIFIED / REMOVED / RENAMED），不复述全文
+    - MODIFIED 必须携带完整需求正文与所有保留的 Scenario
+    - 新出现的业务术语先登记到 harness/context/glossary.md
+  design:
+    - 列出 2-3 个候选方案，重点写放弃了什么、为什么放弃
+    - 引入依赖或改架构时，在 docs/decisions/ 新建 ADR（含适用条件与失效条件）
+  tasks:
+    - 每个任务必须能在一次会话内完成，并写明验证方式（具体命令或测试名）
+    - 按测试先行排序：先写会失败的测试任务，再写实现任务
+    - 最后一个任务固定为：运行 bash scripts/verify.sh，并把真实输出写入本变更的 verification.md
+
+operations:
+  apply:
+    guidance:
+      - 严格测试先行（skills/test-driven-development）：先看到测试失败，再写实现
+      - 不做 tasks.md 之外的重构；发现的问题记入 docs/retro/ 或另开变更
+      - 每完成一个任务跑一次 bash scripts/verify.sh；退出码 2 表示无法验证，不等于通过
+  archive:
+    guidance:
+      - 归档前对照 harness/gates/definition-of-done.md 逐项自查，verification.md 必须存在且为真实输出
+      - 新建的主 spec 会带占位 Purpose（TBD），归档后必须改写为真实描述
+      - 若架构有变，同步更新 harness/context/architecture.md

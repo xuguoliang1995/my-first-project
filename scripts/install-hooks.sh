@@ -1,8 +1,17 @@
 #!/usr/bin/env bash
-# 把 Harness 的钩子接到真实执行路径上（这是"不可绕过"与"只是文档"的分界线）。
-#   1. git pre-commit  -> harness/hooks/pre-commit.sh
-#   2. .claude/skills、.claude/commands、.claude/agents -> 项目根对应目录
+# 把 Harness 的钩子与方法层接到真实执行路径上（这是"不可绕过"与"只是文档"的分界线）。
+#   1. git pre-commit -> harness/hooks/pre-commit.sh
+#   2. 手写技能 skills/<name>/ 与命令 commands/<name>.md
+#      逐项链接进 .claude/ 与 .qoder/（两个 IDE 都能发现）
+#   3. .claude/agents -> agents/
 # 可重复执行（幂等）。
+#
+# 为什么逐项链接而不是整目录链接：
+#   `npx openspec init/update` 会往 .claude/、.qoder/ 的 skills/ 与 commands/ 写生成文件。
+#   若整目录链接到根 skills/，生成文件会穿透进手写目录，与人写的技能混在一起，
+#   且下次 update 时被覆盖的范围无法界定。逐项链接让两类文件物理分离：
+#     手写 —— 根 skills/、commands/（真身）；.claude/.qoder 里只是链接
+#     生成 —— .claude/.qoder 里的实体文件（openspec-*、opsx/），勿手改
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -16,6 +25,7 @@ fi
 chmod +x harness/hooks/*.sh scripts/*.sh 2>/dev/null || true
 
 BROKEN=0
+TOOL_DIRS=(.claude .qoder)
 
 # 符号链接的相对路径以「链接所在目录」为基准，而不是仓库根。
 # 所以必须按链接深度算 ../ 的层数，并在创建后检查链接确实能打开。
@@ -29,6 +39,29 @@ check_link() {
   fi
 }
 
+# 创建或刷新一个链接；目标位置已有非链接实体时不覆盖（可能是生成文件或人工文件）。
+make_link() {
+  local target="$1" link="$2"
+  if [ -e "$link" ] && [ ! -L "$link" ]; then
+    echo "警告: ${link} 已存在且不是符号链接，跳过（请人工确认）" >&2
+    return
+  fi
+  ln -sfn "$target" "$link"
+  check_link "$link"
+}
+
+# 旧布局（整目录链接）会让生成文件穿透进手写目录，必须先人工解除。
+reject_dir_link() {
+  local path="$1"
+  if [ -L "$path" ]; then
+    echo "错误: ${path} 是整目录链接（旧布局），请先解除该链接本身（不影响目标目录）后重跑：" >&2
+    echo "      unlink ${path}" >&2
+    BROKEN=1
+    return 1
+  fi
+  mkdir -p "$path"
+}
+
 # 1. git pre-commit（.git/hooks/ 深两层 → ../../）
 HOOK_DST=".git/hooks/pre-commit"
 if [ -e "$HOOK_DST" ] && [ ! -L "$HOOK_DST" ]; then
@@ -38,25 +71,41 @@ else
   check_link "$HOOK_DST"
 fi
 
-# 2. .claude 集成目录（.claude/ 深一层 → ../；避免复制导致的规则漂移）
-mkdir -p .claude
-link_dir() {
-  local name="$1"
-  [ -d "$name" ] || return
-  if [ -e ".claude/${name}" ] && [ ! -L ".claude/${name}" ]; then
-    echo "警告: .claude/${name} 已存在且不是符号链接，跳过" >&2
-    return
+# 2. 手写技能与命令：逐项链接（<tool>/skills/<name> 深两层 → ../../）
+for tool in "${TOOL_DIRS[@]}"; do
+  if reject_dir_link "${tool}/skills"; then
+    for dir in skills/*/; do
+      name="$(basename "$dir")"
+      [ -f "skills/${name}/SKILL.md" ] || continue
+      make_link "../../skills/${name}" "${tool}/skills/${name}"
+    done
   fi
-  ln -sfn "../${name}" ".claude/${name}"
-  check_link ".claude/${name}"
-}
+  if reject_dir_link "${tool}/commands"; then
+    for file in commands/*.md; do
+      [ -f "$file" ] || continue
+      name="$(basename "$file")"
+      make_link "../../commands/${name}" "${tool}/commands/${name}"
+    done
+  fi
+done
 
-link_dir skills
-link_dir commands
-link_dir agents
+# 3. 子智能体：openspec 不写 agents/，保持整目录链接（.claude/ 深一层 → ../）
+if [ -d agents ]; then
+  make_link "../agents" ".claude/agents"
+fi
+
+# 已删除的手写技能/命令会留下断链，在这里一并暴露
+for tool in "${TOOL_DIRS[@]}"; do
+  for link in "${tool}"/skills/* "${tool}"/commands/*; do
+    if [ -L "$link" ] && [ ! -e "$link" ]; then
+      echo "错误: ${link} 是断链（源已删除？）-> $(readlink "$link")" >&2
+      BROKEN=1
+    fi
+  done
+done
 
 if [ "$BROKEN" -ne 0 ]; then
-  echo "结论: 接线失败，存在断链（exit 1）。" >&2
+  echo "结论: 接线失败，存在断链或旧布局（exit 1）。" >&2
   exit 1
 fi
 

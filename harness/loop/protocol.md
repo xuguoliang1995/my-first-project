@@ -15,7 +15,7 @@ Observe ──► Plan ──► Act ──► Verify ──► Record
 ## O — Observe（观察）
 
 - 读 `harness/rules/00-constitution.md`
-- 读 `harness/context/architecture.md` 与 `openspec/project.md`
+- 读 `harness/context/architecture.md` 与 `openspec/config.yaml`
 - 找到相关 `openspec/specs/<domain>/spec.md` 与当前变更 `proposal.md`
 - 用搜索而非猜测定位代码：先搜符号，再读文件，再改
 - **退出条件**：能用自己的话复述"现在的行为是什么、我要改的是哪一部分"

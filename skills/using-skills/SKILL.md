@@ -16,12 +16,15 @@ description: 元技能。任务开始前用来决定"该用哪个技能"，并�
 2. 识别当前任务属于哪类信号（模糊需求 / 要拆解 / 要写码 / 报错 / 要交付）
 3. 打开对应 `skills/<name>/SKILL.md`，按它的**退出标准**执行
 4. 一个任务可能命中多个技能——按下面的链路串联，不要只挑一个
+5. `/opsx:*` 只管**规约产物**（建、改、归档）；手写技能管**怎么做对**。
+   走 OPSX 时手写技能照样要用，尤其是 `/opsx:apply` 期间的测试先行与完成前验证
 
 ## 典型链路
 
 | 场景 | 链路 |
 | --- | --- |
 | 新功能 | brainstorming → writing-plans → test-driven-development → requesting-code-review → verification-before-completion |
+| 新功能（走 OPSX） | `/opsx:explore`（+ brainstorming）→ `/opsx:propose` → `/opsx:apply`（+ test-driven-development）→ verification-before-completion → `/opsx:archive` |
 | 修 bug | systematic-debugging → test-driven-development（回归测试）→ verification-before-completion |
 | 大任务并行 | writing-plans → subagent-driven-development → requesting-code-review → verification |
 | 收到评审 | receiving-code-review → test-driven-development（补测试）→ verification |
