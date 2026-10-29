@@ -1,6 +1,6 @@
 [submodule "apps/api"]
 	path = apps/api
-	url = /Users/xuguoliang/Desktop/my-first-project-api
+	url = git@github.com:xuguoliang1995/api.git
 [submodule "apps/web"]
 	path = apps/web
-	url = /Users/xuguoliang/Desktop/my-first-project-web
+	url = git@github.com:xuguoliang1995/web.git
