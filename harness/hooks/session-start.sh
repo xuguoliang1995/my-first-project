@@ -58,6 +58,11 @@ if git rev-parse --git-dir > /dev/null 2>&1; then
   else
     echo "  pre-commit 闸门: 未接线（执行 bash scripts/install-hooks.sh）"
   fi
+  for link in .claude/skills .claude/commands .claude/agents; do
+    if [ -L "$link" ] && [ ! -e "$link" ]; then
+      echo "  ✗ 断链: ${link} -> $(readlink "$link")（执行 bash scripts/install-hooks.sh）"
+    fi
+  done
 else
   echo "  (非 git 仓库)"
 fi
