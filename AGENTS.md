@@ -138,7 +138,7 @@ my-first-project/
 │   ├── skills/<name>          #   指向 skills/<name> 的逐项链接（install-hooks 维护）
 │   ├── skills/openspec-*      #   生成，勿手改（npx openspec update 刷新）
 │   └── commands/opsx/         #   生成，勿手改
-├── docs/{plans,decisions,retro}/
+├── docs/{decisions,retro}/    # ADR 与复盘（计划一律写进 openspec 变更的 tasks.md）
 ├── apps/{web,api}/            # 可部署单元（待选型）
 ├── packages/shared/           # 跨端类型与纯函数
 └── scripts/                   # verify / new-change / install-hooks

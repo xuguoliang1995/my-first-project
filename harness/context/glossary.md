@@ -19,7 +19,7 @@
 | 术语 | 定义 |
 | --- | --- |
 | 澄清（clarify） | 动手前把模糊点问清楚，一次只问一个问题 |
-| 计划（plan） | 拆成可独立验证的原子任务，落到 `tasks.md` 或 `docs/plans/` |
+| 计划（plan） | 拆成可独立验证的原子任务，落到 `openspec/changes/<id>/tasks.md` |
 | 红灯（red） | 测试失败且失败原因是功能缺失 |
 | 绿灯（green） | 测试通过，且没有为通过而削弱断言 |
 | 验证证据（evidence） | 命令的真实输出，落档到 `changes/<id>/verification.md` |

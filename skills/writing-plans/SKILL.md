@@ -1,6 +1,6 @@
 ---
 name: writing-plans
-description: 把已澄清的需求拆成可执行、可验证的原子任务，写入 openspec 的 tasks.md 或 docs/plans/。当需求已明确但工作量超过一次改动、或需要跨文件多步实施时使用。不适用于单文件单函数的直接修改。
+description: 把已澄清的需求拆成可执行、可验证的原子任务，写入 openspec 的 tasks.md。当需求已明确但工作量超过一次改动、或需要跨文件多步实施时使用。不适用于单文件单函数的直接修改。
 ---
 
 # 技能：writing-plans（拆解与计划）
@@ -67,7 +67,7 @@ description: 把已澄清的需求拆成可执行、可验证的原子任务，�
 | 场景 | 位置 |
 | --- | --- |
 | 有 openspec 变更 | `openspec/changes/<id>/tasks.md` |
-| 跨变更的长期实施计划 | `docs/plans/<主题>.md`，并链接相关变更 |
+| 跨多个变更的长期计划 | 拆成多个 openspec 变更，在各自 `proposal.md` 写明前置/后续变更 id；不另设计划目录 |
 
 ## 退出标准
 
