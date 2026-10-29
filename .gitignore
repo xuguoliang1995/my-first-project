@@ -29,6 +29,7 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
+.qoder/settings.local.json
 
 # OpenSpec 本地状态（config.yaml 与 specs/changes 必须入库，见 harness/rules/30）
 .openspec-cache/

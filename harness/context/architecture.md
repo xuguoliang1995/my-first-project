@@ -27,8 +27,8 @@
 | `packages/shared` | 跨端共享的**类型与纯函数** | 零 I/O、零框架依赖 |
 | `harness/` | 智能体执行约束 | 不含业务代码 |
 | `openspec/` | 行为规约 | 不含实现细节 |
-| `skills/` | 工作流技能定义 | 不含业务代码 |
-| `commands/`、`agents/` | 斜杠命令与子智能体定义 | 只引用技能，不重复规则 |
+| `skills/` | 工作流技能定义（真身，逐项链接进 `.qoder/skills/`） | 不含业务代码 |
+| `.qoder/` | IDE 集成：钩子配置、斜杠命令、子智能体、openspec 生成文件 | 只引用技能，不重复规则 |
 
 ## 依赖方向（不可逆）
 
@@ -48,7 +48,9 @@ packages/shared  ──►  （无下游，标准库除外）
 openspec CLI   → 变更的创建 / 校验 / 归档（权威结构判据）
 verify.sh      → 类型 / 静态 / 测试 / 构建（权威执行判据）
 git pre-commit → 把 verify.sh 变成不可绕过的闸门
-.claude/hooks  → 会话开始注入必读清单与仓库快照
+.qoder/settings.json
+  SessionStart → 会话开始注入必读清单与仓库快照
+  PreToolUse   → 拦截 git commit --no-verify 与 git push --force
 ```
 
 ## 待定项的收敛方式

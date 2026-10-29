@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash harness/hooks/qoder-session-start.sh",
+            "statusMessage": "注入必读清单与仓库快照"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash harness/hooks/guard-bash.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

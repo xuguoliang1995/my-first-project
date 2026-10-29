@@ -64,7 +64,7 @@ description: 用子智能体执行已拆解的任务，实现上下文隔离与�
 
 ## 本项目中的定义
 
-子智能体定义放在 `agents/`，例如 `agents/code-reviewer.md`、`agents/plan-executor.md`。
+子智能体定义放在 `.qoder/agents/`，例如 `.qoder/agents/code-reviewer.md`、`.qoder/agents/plan-executor.md`。
 派发时把契约作为任务描述传进去。
 
 ## 退出标准

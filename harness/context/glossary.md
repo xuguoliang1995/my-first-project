@@ -26,7 +26,7 @@
 | 归档（archive） | `openspec archive` 把 delta 合并进主 spec，变更移入 `archive/` |
 | 三态验证 | `verify.sh` 的 0 通过 / 1 失败 / 2 无法验证 |
 | 技能（skill） | `skills/<name>/SKILL.md`，一类任务的可复用套路 |
-| 子智能体（subagent） | 由 `agents/*.md` 定义、用于隔离上下文或并行的执行单元 |
+| 子智能体（subagent） | 由 `.qoder/agents/*.md` 定义、用于隔离上下文或并行的执行单元 |
 
 ## 业务术语
 

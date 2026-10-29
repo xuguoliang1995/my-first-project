@@ -63,7 +63,7 @@
 | 新增或修改技能本身 | `skills/writing-skills/SKILL.md` |
 | 不确定该用哪个 | `skills/using-skills/SKILL.md`（元技能） |
 
-OpenSpec 官方技能（`/opsx:*`，由 `npx openspec init` 生成在 `.claude/`、`.qoder/`）负责
+OpenSpec 官方技能（`/opsx:*`，由 `npx openspec init --tools qoder` 生成在 `.qoder/`）负责
 **规约产物的创建与归档**；上表的手写技能负责**怎么把事做对**。两者叠加使用，不互相替代。
 命令说明见 `harness/context/openspec-cli.md`。
 
@@ -126,15 +126,17 @@ my-first-project/
 │   ├── context/               # 架构全景 / 术语表 / OpenSpec CLI 说明
 │   ├── gates/                 # 完成的定义（DoD）
 │   ├── loop/                  # O→P→A→V→R 协议
-│   └── hooks/                 # session-start / task-complete / pre-commit
+│   └── hooks/                 # session-start / task-complete / pre-commit / guard-bash
 ├── openspec/                  # ★ 意图层（官方 CLI 兼容）
 │   ├── config.yaml            # schema + context / rules / operations（项目约定唯一存放处）
 │   ├── specs/<domain>/        # 当前行为的唯一真相来源
 │   └── changes/<id>/          # 进行中的变更 + archive/
 ├── skills/                    # ★ 方法层：手写技能真身（Agent Skills 格式）
-├── commands/                  # 手写斜杠命令真身
-├── agents/                    # 子智能体定义
-├── .claude/ .qoder/           # IDE 集成：手写技能/命令的逐项链接 + openspec 生成文件
+├── .qoder/                    # IDE 集成（Qoder）
+│   ├── settings.json          #   钩子：SessionStart 注入快照、PreToolUse 拦截 --no-verify / --force
+│   ├── commands/*.md          #   手写斜杠命令
+│   ├── agents/*.md            #   手写子智能体
+│   ├── skills/<name>          #   指向 skills/<name> 的逐项链接（install-hooks 维护）
 │   ├── skills/openspec-*      #   生成，勿手改（npx openspec update 刷新）
 │   └── commands/opsx/         #   生成，勿手改
 ├── docs/{plans,decisions,retro}/

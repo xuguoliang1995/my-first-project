@@ -49,8 +49,8 @@ openspec/
 
 ## 生成文件（勿手改）
 
-`.claude/skills/openspec-*`、`.claude/commands/opsx/`、`.qoder/skills/openspec-*`、
-`.qoder/commands/opsx/` 由 `npx openspec init` / `update` 生成。手改会在下次 update 时被覆盖。
+`.qoder/skills/openspec-*`、`.qoder/commands/opsx/` 由 `npx openspec init --tools qoder` /
+`update` 生成。手改会在下次 update 时被覆盖。
 需要定制行为时改 `openspec/config.yaml` 的 `rules` / `operations`。
 
 升级 CLI 后刷新：
@@ -84,7 +84,8 @@ npx openspec archive <id> -y
 7. `init --language` 不会覆盖已有的 config.yaml；语言要求写在 `context` 里
 8. 首次 `openspec update` 会改写**用户级**全局配置：把隐式默认的 `core` 迁移为
    显式 `profile: custom` + 同样 6 个 workflows（输出 `Migrated: custom profile`），功能等价
-9. `openspec update` 只刷新它自己生成的文件，不会动 `.claude/` `.qoder/` 里的手写技能链接
+9. `openspec update` 只刷新它自己生成的文件，不会动 `.qoder/` 里的手写技能链接、
+   手写命令与子智能体
 
 ## delta 书写格式
 

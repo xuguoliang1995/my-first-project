@@ -24,11 +24,11 @@ if [ -d skills ]; then
 else
   echo "  (skills/ 不存在)"
 fi
-opsx="$(find .claude/commands/opsx -maxdepth 1 -name '*.md' 2>/dev/null | sort | sed 's|.*/||; s|\.md$||' | tr '\n' ' ')"
+opsx="$(find .qoder/commands/opsx -maxdepth 1 -name '*.md' 2>/dev/null | sort | sed 's|.*/||; s|\.md$||' | tr '\n' ' ')"
 if [ -n "$opsx" ]; then
   echo "  OpenSpec 命令: $(printf '/opsx:%s ' $opsx)（说明见 harness/context/openspec-cli.md）"
 else
-  echo "  OpenSpec 命令: 未安装（执行 npx openspec init --tools claude,qoder）"
+  echo "  OpenSpec 命令: 未安装（执行 npx openspec init --tools qoder）"
 fi
 echo
 
@@ -64,7 +64,7 @@ if git rev-parse --git-dir > /dev/null 2>&1; then
   else
     echo "  pre-commit 闸门: 未接线（执行 bash scripts/install-hooks.sh）"
   fi
-  for link in .claude/skills .claude/commands .claude/agents; do
+  for link in .qoder/skills/*; do
     if [ -L "$link" ] && [ ! -e "$link" ]; then
       echo "  ✗ 断链: ${link} -> $(readlink "$link")（执行 bash scripts/install-hooks.sh）"
     fi
