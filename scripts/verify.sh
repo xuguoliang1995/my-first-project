@@ -22,6 +22,19 @@ STAGES=(typecheck lint test build)
 FAILED=""
 PASSED=0
 SKIPPED=0
+# 与 SKIPPED 不同：UNVERIFIED 表示"该阶段本应验证，但缺少工具链/产物而无法验证"，
+# 它绝不能等价于通过——只要它非 0，最终退出码就必须是 2。
+UNVERIFIED=0
+
+# JDK 探测：非登录 shell（如 CI、直接 bash 脚本）拿不到 shell rc 里的 JAVA_HOME，
+# 这里补一层兜底，避免把"环境没配好"误报成"代码有问题"。
+if [ -z "${JAVA_HOME:-}" ] && command -v /usr/libexec/java_home >/dev/null 2>&1; then
+  detected_jdk="$(/usr/libexec/java_home -v 21 2>/dev/null || /usr/libexec/java_home 2>/dev/null || true)"
+  [ -n "$detected_jdk" ] && export JAVA_HOME="$detected_jdk"
+fi
+if [ -n "${JAVA_HOME:-}" ] && [ -x "${JAVA_HOME}/bin/java" ]; then
+  export PATH="${JAVA_HOME}/bin:$PATH"
+fi
 
 read_pkg_field() {
   node --input-type=commonjs -e '
@@ -115,8 +128,67 @@ for stage in "${STAGES[@]}"; do
   echo
 done
 
+# -- maven ------------------------------------------------------
+# 后端不是 npm 包，单独一段。用 wrapper 执行，不要求全局 mvn；但必须有 JDK。
+echo "-- maven -----------------------------------------------------"
+if [ -f apps/api/pom.xml ]; then
+  # 注意：macOS 的 /usr/bin/java 是存根，存在但执行失败，
+  # 因此必须真实执行一次而不能只靠 command -v。
+  if java -version >/dev/null 2>&1; then
+    if [ -x apps/api/mvnw ]; then
+      echo "   [apps/api] \$ ./mvnw -q test"
+      if ( cd apps/api && ./mvnw -q test ); then
+        PASSED=$((PASSED + 1))
+      else
+        FAILED="${FAILED}apps/api:maven\n"
+        echo "   ^ 失败: apps/api / maven test" >&2
+      fi
+    else
+      UNVERIFIED=$((UNVERIFIED + 1))
+      echo "   无法验证（apps/api/mvnw 缺失或没有执行位）" >&2
+    fi
+  else
+    UNVERIFIED=$((UNVERIFIED + 1))
+    echo "   无法验证（未找到 JDK：java 不在 PATH 且 JAVA_HOME 不可用）" >&2
+  fi
+else
+  echo "   跳过（未检测到 apps/api/pom.xml）"
+fi
+echo
+
+# -- contract ---------------------------------------------------
+# 契约一致性：contracts/openapi.json 是真相，前端生成类型必须与它同步。
+# 做法是重新生成一次再比对哈希——不一致说明有人改了契约却没重跑 codegen。
+echo "-- contract --------------------------------------------------"
+if [ -f contracts/openapi.json ] && [ -f apps/web/package.json ] && [ -f apps/web/src/api/schema.d.ts ]; then
+  if command -v npm >/dev/null 2>&1; then
+    contract_before="$(shasum apps/web/src/api/schema.d.ts | awk '{print $1}')"
+    echo "   \$ npm run codegen --workspace apps/web"
+    if npm run codegen --workspace apps/web >/dev/null 2>&1; then
+      contract_after="$(shasum apps/web/src/api/schema.d.ts | awk '{print $1}')"
+      if [ "$contract_before" = "$contract_after" ]; then
+        PASSED=$((PASSED + 1))
+        echo "   ^ 前端生成类型与 contracts/openapi.json 一致"
+      else
+        FAILED="${FAILED}(root):contract\n"
+        echo "   ^ 失败: 生成类型与契约不一致——重跑 codegen 并提交，或确认契约变更已评审" >&2
+      fi
+    else
+      FAILED="${FAILED}(root):contract\n"
+      echo "   ^ 失败: codegen 执行失败" >&2
+    fi
+  else
+    UNVERIFIED=$((UNVERIFIED + 1))
+    echo "   无法验证（未找到 npm）" >&2
+  fi
+else
+  UNVERIFIED=$((UNVERIFIED + 1))
+  echo "   无法验证（缺少 contracts/openapi.json 或 apps/web/src/api/schema.d.ts）" >&2
+fi
+echo
+
 echo "=== 汇总 ==="
-echo "通过: ${PASSED}   跳过阶段: ${SKIPPED}"
+echo "通过: ${PASSED}   跳过阶段: ${SKIPPED}   无法验证: ${UNVERIFIED}"
 echo
 
 if [ -n "$FAILED" ]; then
@@ -125,6 +197,13 @@ if [ -n "$FAILED" ]; then
   echo
   echo "结论: 验证失败（exit 1），不得声称完成。先修复上述项再重跑。"
   exit 1
+fi
+
+# 有关键阶段"本应验证却无法验证"时，即使其他阶段通过也不能判绿灯。
+if [ "$UNVERIFIED" -gt 0 ]; then
+  echo "结论: 无法完全验证（exit 2）——有 ${UNVERIFIED} 个阶段因缺少工具链/产物被跳过。"
+  echo "      这不等于通过：请补齐环境（如 JDK、npm install）后重跑。"
+  exit 2
 fi
 
 if [ "$PASSED" -eq 0 ]; then

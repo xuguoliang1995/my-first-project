@@ -11,6 +11,15 @@ coverage/
 *.tsbuildinfo
 .turbo/
 
+# Java / Maven 构建产物
+target/
+*.class
+*.jar
+
+# IDE 与 Maven 本地状态（.mvn/wrapper 必须入库：mvnw 依赖它定位 Maven 版本）
+*.iml
+.mvn/wrapper/maven-wrapper.jar
+
 # 环境与密钥 —— 任何凭据都不得入库
 .env
 .env.*

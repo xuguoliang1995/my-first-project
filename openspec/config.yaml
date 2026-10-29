@@ -10,11 +10,15 @@ context: |
   项目：my-first-project，全栈 Web 应用，当前为骨架阶段，业务功能尚未开始。
   所有产物用中文书写；RFC 2119 关键词（MUST / SHALL / SHOULD / MAY）保留英文大写。
 
-  技术边界：
+  技术边界（polyglot 单仓；选型依据见 docs/decisions/0002-adopt-polyglot-stack.md）：
   - Node >= 22；npm workspaces（apps/*、packages/*），单一 package-lock.json
   - TypeScript strict（tsconfig.base.json）
-  - 前端框架、后端框架、数据库：待定 —— 选型本身必须走一次变更并产出 ADR（docs/decisions/）
-  - 跨端类型与纯函数放 packages/shared（零 I/O、零框架依赖，只允许被 apps/* 依赖）
+  - 前端：React + Vite，纯 SPA（CSR），位于 apps/web
+  - 后端：Spring Boot 3.5.x + Spring Data JPA，Maven wrapper，JDK 21，位于 apps/api
+  - 数据库：PostgreSQL；测试用 Testcontainers 起一次性容器，不依赖本机预装数据库
+  - 跨栈契约真相：contracts/openapi.json（后端 springdoc 代码优先生成），
+    前端用 openapi-typescript 派生类型；契约与派生类型不一致即构建失败
+  - packages/shared 仅服务前端（TS 类型与纯函数）；后端不依赖它，跨栈只经契约通信
 
   CLI 调用：openspec 安装在项目本地，命令一律写成 `npx openspec ...`；
   `npx openspec validate` 必须带 `--no-interactive`，否则在无 TTY 环境下挂起。
