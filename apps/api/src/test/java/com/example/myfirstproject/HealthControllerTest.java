@@ -4,7 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -19,9 +18,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * 本测试先于实现编写——在 HealthController 存在之前它必须失败。
  */
-@SpringBootTest
 @AutoConfigureMockMvc
-class HealthControllerTest {
+class HealthControllerTest extends AbstractIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;

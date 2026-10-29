@@ -29,6 +29,25 @@
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
 
+    <!-- 数据访问：JPA + PostgreSQL。切片的边界只到"连接链路通"，不引入业务实体。 -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- 本地开发：应用启动时自动拉起 compose.yaml 里的 PostgreSQL。
+         Spring Boot 默认 spring.docker.compose.skip.in-tests=true，测试阶段不会触发。 -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-docker-compose</artifactId>
+      <scope>runtime</scope>
+      <optional>true</optional>
+    </dependency>
+
     <!-- OpenAPI 契约真相的产出端：从 controller 注解生成 openapi.json（code-first） -->
     <dependency>
       <groupId>org.springdoc</groupId>
@@ -39,6 +58,24 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- 数据访问测试基座：Testcontainers 起一次性 PostgreSQL，不依赖本机预装数据库。
+         版本由 spring-boot-starter-parent 的依赖管理统一供给，不在此写死。 -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-testcontainers</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>postgresql</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
