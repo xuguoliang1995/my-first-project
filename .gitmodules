@@ -1,0 +1,6 @@
+[submodule "apps/api"]
+	path = apps/api
+	url = ../my-first-project-api
+[submodule "apps/web"]
+	path = apps/web
+	url = ../my-first-project-web
